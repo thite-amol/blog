@@ -1,6 +1,5 @@
 """Perform all user related operations."""
 
-import datetime
 from typing import Union
 
 import jwt
@@ -78,15 +77,7 @@ def login_user(input_data: dict) -> tuple:
             message="Invalid username or password", status=400
         )
 
-    token = jwt.encode(
-        {
-            "id": user_details.id,
-            "email": user_details.email,
-            "username": user_details.username,
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
-        },
-        app.config.get("SECRET_KEY"),
-    )
+    token = user_details.encode_auth_token()
 
     return generate_response(
         data={"access_token": token},
@@ -132,9 +123,7 @@ def get_current_user() -> tuple:
     """
     if current_user.is_authenticated:
         return generate_response(
-            data=User.query.filter_by(email=current_user.email)
-            .first()
-            .serialize,
+            data=current_user.serialize,
             status=200,
         )
 
