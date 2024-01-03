@@ -2,6 +2,8 @@
 import json
 from unittest import mock
 
+from src.util import generate_response
+
 
 @mock.patch("flask_login.utils._get_user")
 def test_user_details(current_user, client, user_detail):
@@ -49,5 +51,21 @@ def test_user_auth(app, client, user_detail):
                 ),
                 content_type="application/json",
             )
+
+    assert str(user_detail) == "<User test_username>"
+    assert response.status_code == 201
+
+
+def test_user_register_route(app, client, user_detail):
+    """Test user registration."""
+    with mock.patch("src.application.user.route.create_user") as mocked_create:
+        mocked_create.return_value = generate_response(
+            data=None, message="User Created", status=201
+        )
+        response = client.post(
+            "/user/",
+            data=json.dumps({"email": "test@test.com", "password": "abcd1234"}),
+            content_type="application/json",
+        )
 
     assert response.status_code == 201

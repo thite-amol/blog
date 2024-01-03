@@ -89,22 +89,6 @@ class User(UserMixin, db.Model):
             app.config.get("SECRET_KEY"),
         )
 
-    def decode_auth_token(self):
-        """Decode the Auth Token
-        Returns:
-            str: Access Token.
-        """
-        return jwt.encode(
-            {
-                "id": self.id,
-                "email": self.email,
-                "username": self.username,
-                "exp": datetime.datetime.utcnow()
-                + datetime.timedelta(minutes=30),
-            },
-            app.config.get("SECRET_KEY"),
-        )
-
 
 @login_manager.user_loader
 def load_user(userid: int) -> User:
