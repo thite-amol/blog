@@ -399,4 +399,4 @@ valid-classmethod-first-arg=cls,
 valid-metaclass-classmethod-first-arg=mcs
 
 [MASTER]
-ignore=migrations
+ignore-paths=^tests/.*$,

@@ -2,6 +2,8 @@
 
 import datetime
 
+import jwt
+from flask import current_app as app
 from flask_bcrypt import check_password_hash, generate_password_hash
 from flask_login import UserMixin
 from marshmallow import Schema, fields, validate
@@ -70,6 +72,22 @@ class User(UserMixin, db.Model):
             bool: True if hash matched with password
         """
         return check_password_hash(self.password, password)
+
+    def encode_auth_token(self):
+        """Generates the Auth Token
+        Returns:
+            str: Access Token.
+        """
+        return jwt.encode(
+            {
+                "id": self.id,
+                "email": self.email,
+                "username": self.username,
+                "exp": datetime.datetime.utcnow()
+                + datetime.timedelta(minutes=30),
+            },
+            app.config.get("SECRET_KEY"),
+        )
 
 
 @login_manager.user_loader
